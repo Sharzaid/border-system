@@ -1,0 +1,48 @@
+{% extends "base.html" %}
+{% block title %}الإحصائيات – نظام المنفذ{% endblock %}
+{% block content %}
+<h1>الإحصائيات</h1>
+
+<div class="stats-grid" style="margin-bottom:1.5rem;">
+    <div class="stat-card">
+        <div class="num">{{ total }}</div>
+        <div class="label">إجمالي الحالات</div>
+    </div>
+</div>
+
+<div class="card">
+    <h2>حسب الحالة</h2>
+    <div class="stats-grid">
+        {% for s, n in by_status.items() %}
+        <div class="stat-card">
+            <div class="num">{{ n }}</div>
+            <div class="label">{{ s }}</div>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+
+<div class="card">
+    <h2>حسب القسم المسجّل</h2>
+    <div class="stats-grid">
+        {% for d, n in by_dept.items() %}
+        <div class="stat-card">
+            <div class="num">{{ n }}</div>
+            <div class="label">{{ d }}</div>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+
+<div class="card">
+    <h2>حسب نوع الحركة</h2>
+    <div class="stats-grid">
+        {% for m, n in by_movement.items() %}
+        <div class="stat-card">
+            <div class="num">{{ n }}</div>
+            <div class="label">{{ m }}</div>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+{% endblock %}

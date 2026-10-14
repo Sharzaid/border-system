@@ -1,0 +1,131 @@
+{% extends "base.html" %}
+{% block title %}{% if mode == "create" %}تسجيل حالة{% else %}تعديل حالة{% endif %} – نظام المنفذ{% endblock %}
+{% block content %}
+<h1>{% if mode == "create" %}تسجيل حالة جديدة{% else %}تعديل الحالة{% endif %}</h1>
+
+<div class="card">
+    <form method="post" action="{% if mode == 'create' %}/cases/new{% else %}/cases/{{ case.id }}/edit{% endif %}">
+
+        {% if mode == "edit" and not (user.is_admin or user.can_edit_all) %}
+        <!-- وضع تعديل الحالة فقط -->
+        <div class="alert alert-info">لديك صلاحية تعديل الحالة والملاحظات فقط</div>
+
+        <div class="form-group">
+            <label>رقم الحالة</label>
+            <input type="text" value="{{ case.case_number }}" disabled>
+        </div>
+        <div class="form-group">
+            <label>اسم الشخص</label>
+            <input type="text" value="{{ case.person_name }}" disabled>
+        </div>
+        <div class="form-group">
+            <label>رقم الجواز / الهوية</label>
+            <input type="text" value="{{ case.passport_id }}" disabled>
+        </div>
+        <div class="form-group">
+            <label>نوع الحركة</label>
+            <input type="text" value="{{ case.movement_type }}" disabled>
+        </div>
+        <div class="form-group">
+            <label>الحالة *</label>
+            <select name="status" required>
+                <option value="قيد الإجراء" {% if case.status == "قيد الإجراء" %}selected{% endif %}>قيد الإجراء</option>
+                <option value="تم الإعادة" {% if case.status == "تم الإعادة" %}selected{% endif %}>تم الإعادة</option>
+                <option value="لم تتم" {% if case.status == "لم تتم" %}selected{% endif %}>لم تتم</option>
+                <option value="محول" {% if case.status == "محول" %}selected{% endif %}>محول</option>
+                <option value="أخرى" {% if case.status == "أخرى" %}selected{% endif %}>أخرى</option>
+            </select>
+        </div>
+
+        {% if user.department == "الجوازات" %}
+        <div class="form-group">
+            <label>ملاحظات الجوازات</label>
+            <textarea name="notes_jawazat">{{ case.notes_jawazat }}</textarea>
+        </div>
+        <input type="hidden" name="notes_gamarik" value="{{ case.notes_gamarik }}">
+        <input type="hidden" name="notes_border" value="{{ case.notes_border }}">
+        {% elif user.department == "الجمارك" %}
+        <div class="form-group">
+            <label>ملاحظات الجمارك</label>
+            <textarea name="notes_gamarik">{{ case.notes_gamarik }}</textarea>
+        </div>
+        <input type="hidden" name="notes_jawazat" value="{{ case.notes_jawazat }}">
+        <input type="hidden" name="notes_border" value="{{ case.notes_border }}">
+        {% elif user.department == "سلاح الحدود" %}
+        <div class="form-group">
+            <label>ملاحظات سلاح الحدود</label>
+            <textarea name="notes_border">{{ case.notes_border }}</textarea>
+        </div>
+        <input type="hidden" name="notes_jawazat" value="{{ case.notes_jawazat }}">
+        <input type="hidden" name="notes_gamarik" value="{{ case.notes_gamarik }}">
+        {% else %}
+        <input type="hidden" name="notes_jawazat" value="{{ case.notes_jawazat }}">
+        <input type="hidden" name="notes_gamarik" value="{{ case.notes_gamarik }}">
+        <input type="hidden" name="notes_border" value="{{ case.notes_border }}">
+        {% endif %}
+
+        {% else %}
+        <!-- وضع إنشاء أو تعديل كامل -->
+        <div class="form-group">
+            <label>اسم الشخص *</label>
+            <input type="text" name="person_name" required value="{{ case.person_name if case else '' }}" placeholder="الاسم الكامل">
+        </div>
+        <div class="form-group">
+            <label>رقم الجواز / الهوية *</label>
+            <input type="text" name="passport_id" required value="{{ case.passport_id if case else '' }}" placeholder="رقم الجواز أو الهوية">
+        </div>
+        <div class="form-group">
+            <label>الجنسية</label>
+            <input type="text" name="nationality" value="{{ case.nationality if case else '' }}" placeholder="مثال: سعودي، يمني، مصري...">
+        </div>
+        <div class="form-group">
+            <label>نوع الحركة *</label>
+            <select name="movement_type" required>
+                <option value="">— اختر —</option>
+                <option value="قدوم" {% if case and case.movement_type == "قدوم" %}selected{% endif %}>قدوم (إعادة عند القدوم)</option>
+                <option value="مغادرة" {% if case and case.movement_type == "مغادرة" %}selected{% endif %}>مغادرة (إعادة عند المغادرة)</option>
+            </select>
+        </div>
+        <div class="form-group">
+            <label>سبب الإعادة</label>
+            <input type="text" name="reason" value="{{ case.reason if case else '' }}" placeholder="سبب الإعادة">
+        </div>
+        <div class="form-group">
+            <label>الحالة *</label>
+            <select name="status" required>
+                <option value="قيد الإجراء" {% if not case or case.status == "قيد الإجراء" %}selected{% endif %}>قيد الإجراء</option>
+                <option value="تم الإعادة" {% if case and case.status == "تم الإعادة" %}selected{% endif %}>تم الإعادة</option>
+                <option value="لم تتم" {% if case and case.status == "لم تتم" %}selected{% endif %}>لم تتم</option>
+                <option value="محول" {% if case and case.status == "محول" %}selected{% endif %}>محول</option>
+                <option value="أخرى" {% if case and case.status == "أخرى" %}selected{% endif %}>أخرى</option>
+            </select>
+        </div>
+
+        {% if mode == "create" %}
+        <div class="form-group">
+            <label>ملاحظات (حسب قسمك)</label>
+            <textarea name="notes" placeholder="أي ملاحظات إضافية"></textarea>
+        </div>
+        {% else %}
+        <div class="form-group">
+            <label>ملاحظات الجوازات</label>
+            <textarea name="notes_jawazat">{{ case.notes_jawazat }}</textarea>
+        </div>
+        <div class="form-group">
+            <label>ملاحظات الجمارك</label>
+            <textarea name="notes_gamarik">{{ case.notes_gamarik }}</textarea>
+        </div>
+        <div class="form-group">
+            <label>ملاحظات سلاح الحدود</label>
+            <textarea name="notes_border">{{ case.notes_border }}</textarea>
+        </div>
+        {% endif %}
+        {% endif %}
+
+        <div style="display:flex; gap:0.75rem; margin-top:1.25rem; flex-wrap:wrap;">
+            <button type="submit" class="btn btn-primary">حفظ</button>
+            <a href="{% if case %}/cases/{{ case.id }}{% else %}/cases{% endif %}" class="btn btn-outline">إلغاء</a>
+        </div>
+    </form>
+</div>
+{% endblock %}

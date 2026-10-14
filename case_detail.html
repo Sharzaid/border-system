@@ -1,0 +1,89 @@
+{% extends "base.html" %}
+{% block title %}تفاصيل الحالة – نظام المنفذ{% endblock %}
+{% block content %}
+<div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:0.5rem; margin-bottom:1rem;">
+    <h1>تفاصيل الحالة {{ case.case_number }}</h1>
+    <div style="display:flex; gap:0.5rem;">
+        {% if user.is_admin or user.can_edit_all or user.can_edit_status %}
+        <a href="/cases/{{ case.id }}/edit" class="btn btn-warning btn-sm">تعديل</a>
+        {% endif %}
+        <a href="/cases" class="btn btn-outline btn-sm">رجوع</a>
+    </div>
+</div>
+
+<div class="card">
+    <table style="width:100%;">
+        <tr>
+            <td style="width:35%; font-weight:700; color:#4a5568;">رقم الحالة</td>
+            <td><strong>{{ case.case_number }}</strong></td>
+        </tr>
+        <tr>
+            <td style="font-weight:700; color:#4a5568;">اسم الشخص</td>
+            <td>{{ case.person_name }}</td>
+        </tr>
+        <tr>
+            <td style="font-weight:700; color:#4a5568;">رقم الجواز / الهوية</td>
+            <td>{{ case.passport_id }}</td>
+        </tr>
+        <tr>
+            <td style="font-weight:700; color:#4a5568;">الجنسية</td>
+            <td>{{ case.nationality or "—" }}</td>
+        </tr>
+        <tr>
+            <td style="font-weight:700; color:#4a5568;">نوع الحركة</td>
+            <td>
+                {% if case.movement_type == "قدوم" %}
+                <span class="badge badge-info">قدوم (إعادة عند القدوم)</span>
+                {% else %}
+                <span class="badge badge-muted">مغادرة (إعادة عند المغادرة)</span>
+                {% endif %}
+            </td>
+        </tr>
+        <tr>
+            <td style="font-weight:700; color:#4a5568;">القسم المسجّل</td>
+            <td>{{ case.registered_by_dept }} ({{ case.registered_by_user }})</td>
+        </tr>
+        <tr>
+            <td style="font-weight:700; color:#4a5568;">سبب الإعادة</td>
+            <td>{{ case.reason or "—" }}</td>
+        </tr>
+        <tr>
+            <td style="font-weight:700; color:#4a5568;">الحالة</td>
+            <td>
+                {% if case.status == "تم الإعادة" %}
+                <span class="badge badge-success">{{ case.status }}</span>
+                {% elif case.status == "قيد الإجراء" %}
+                <span class="badge badge-warning">{{ case.status }}</span>
+                {% elif case.status == "لم تتم" %}
+                <span class="badge badge-danger">{{ case.status }}</span>
+                {% else %}
+                <span class="badge badge-muted">{{ case.status }}</span>
+                {% endif %}
+            </td>
+        </tr>
+        <tr>
+            <td style="font-weight:700; color:#4a5568;">ملاحظات الجوازات</td>
+            <td>{{ case.notes_jawazat or "—" }}</td>
+        </tr>
+        <tr>
+            <td style="font-weight:700; color:#4a5568;">ملاحظات الجمارك</td>
+            <td>{{ case.notes_gamarik or "—" }}</td>
+        </tr>
+        <tr>
+            <td style="font-weight:700; color:#4a5568;">ملاحظات سلاح الحدود</td>
+            <td>{{ case.notes_border or "—" }}</td>
+        </tr>
+        <tr>
+            <td style="font-weight:700; color:#4a5568;">تاريخ التسجيل</td>
+            <td>{{ case.created_at.strftime("%Y-%m-%d %H:%M") if case.created_at else "—" }}</td>
+        </tr>
+        <tr>
+            <td style="font-weight:700; color:#4a5568;">آخر تحديث</td>
+            <td>
+                {{ case.updated_at.strftime("%Y-%m-%d %H:%M") if case.updated_at else "—" }}
+                {% if case.updated_by %} · بواسطة {{ case.updated_by }}{% endif %}
+            </td>
+        </tr>
+    </table>
+</div>
+{% endblock %}

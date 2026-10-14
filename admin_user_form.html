@@ -1,0 +1,81 @@
+{% extends "base.html" %}
+{% block title %}{% if edit_user %}تعديل مستخدم{% else %}إضافة مستخدم{% endif %} – نظام المنفذ{% endblock %}
+{% block content %}
+<h1>{% if edit_user %}تعديل مستخدم{% else %}إضافة مستخدم جديد{% endif %}</h1>
+
+{% if error %}
+<div class="alert alert-error">{{ error }}</div>
+{% endif %}
+
+<div class="card">
+    <form method="post" action="{% if edit_user %}/admin/users/{{ edit_user.id }}/edit{% else %}/admin/users/new{% endif %}">
+
+        {% if not edit_user %}
+        <div class="form-group">
+            <label>اسم المستخدم (للدخول) *</label>
+            <input type="text" name="username" required placeholder="مثال: ahmed.jawazat" pattern="[a-zA-Z0-9._-]+" title="حروف إنجليزية وأرقام فقط">
+        </div>
+        {% else %}
+        <div class="form-group">
+            <label>اسم المستخدم</label>
+            <input type="text" value="{{ edit_user.username }}" disabled>
+        </div>
+        {% endif %}
+
+        <div class="form-group">
+            <label>الاسم الكامل *</label>
+            <input type="text" name="full_name" required value="{{ edit_user.full_name if edit_user else '' }}" placeholder="الاسم الظاهر في النظام">
+        </div>
+
+        <div class="form-group">
+            <label>كلمة المرور {% if edit_user %}(اتركها فارغة إذا لا تريد تغييرها){% else %}*{% endif %}</label>
+            <input type="password" name="password" {% if not edit_user %}required{% endif %} placeholder="كلمة مرور قوية">
+        </div>
+
+        <div class="form-group">
+            <label>القسم</label>
+            <select name="department">
+                <option value="">— اختر —</option>
+                <option value="الجوازات" {% if edit_user and edit_user.department == "الجوازات" %}selected{% endif %}>الجوازات</option>
+                <option value="الجمارك" {% if edit_user and edit_user.department == "الجمارك" %}selected{% endif %}>الجمارك</option>
+                <option value="سلاح الحدود" {% if edit_user and edit_user.department == "سلاح الحدود" %}selected{% endif %}>سلاح الحدود</option>
+                <option value="الإدارة" {% if edit_user and edit_user.department == "الإدارة" %}selected{% endif %}>الإدارة</option>
+            </select>
+        </div>
+
+        <div class="form-group">
+            <label>الصلاحيات</label>
+            <div class="checkbox-group" style="margin-top:0.5rem;">
+                <label>
+                    <input type="checkbox" name="is_admin" value="true" {% if edit_user and edit_user.is_admin %}checked{% endif %}>
+                    مدير النظام (تحكم كامل)
+                </label>
+                <label>
+                    <input type="checkbox" name="can_create" value="true" {% if edit_user and edit_user.can_create %}checked{% endif %}>
+                    تسجيل حالات جديدة
+                </label>
+                <label>
+                    <input type="checkbox" name="can_edit_all" value="true" {% if edit_user and edit_user.can_edit_all %}checked{% endif %}>
+                    تعديل كل الحقول
+                </label>
+                <label>
+                    <input type="checkbox" name="can_edit_status" value="true" {% if edit_user and edit_user.can_edit_status %}checked{% endif %}>
+                    تعديل الحالة فقط
+                </label>
+                <label>
+                    <input type="checkbox" name="is_active" value="true" {% if not edit_user or edit_user.is_active %}checked{% endif %}>
+                    الحساب نشط
+                </label>
+            </div>
+            <p style="font-size:0.8rem; color:#718096; margin-top:0.5rem;">
+                ملاحظة: إذا لم تختر أي صلاحية تعديل أو تسجيل = المستخدم اطلاع فقط.
+            </p>
+        </div>
+
+        <div style="display:flex; gap:0.75rem; margin-top:1.25rem;">
+            <button type="submit" class="btn btn-primary">حفظ</button>
+            <a href="/admin/users" class="btn btn-outline">إلغاء</a>
+        </div>
+    </form>
+</div>
+{% endblock %}

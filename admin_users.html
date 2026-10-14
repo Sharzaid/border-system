@@ -1,0 +1,55 @@
+{% extends "base.html" %}
+{% block title %}إدارة المستخدمين – نظام المنفذ{% endblock %}
+{% block content %}
+<div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:0.5rem; margin-bottom:1rem;">
+    <h1>إدارة المستخدمين والصلاحيات</h1>
+    <a href="/admin/users/new" class="btn btn-success">+ إضافة مستخدم</a>
+</div>
+
+<div class="alert alert-info">
+    أنت المدير الوحيد الذي يتحكم في الصلاحيات. يمكنك تحديد من يسجل الحالات ومن يعدل الحالة فقط ومن يطلع فقط.
+</div>
+
+<div class="card table-wrap">
+    <table>
+        <thead>
+            <tr>
+                <th>اسم المستخدم</th>
+                <th>الاسم الكامل</th>
+                <th>القسم</th>
+                <th>الصلاحيات</th>
+                <th>الحالة</th>
+                <th></th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for u in users %}
+            <tr>
+                <td><strong>{{ u.username }}</strong></td>
+                <td>{{ u.full_name }}</td>
+                <td>{{ u.department or "—" }}</td>
+                <td style="font-size:0.82rem;">
+                    {% if u.is_admin %}<span class="badge badge-danger">مدير</span> {% endif %}
+                    {% if u.can_create %}<span class="badge badge-success">تسجيل</span> {% endif %}
+                    {% if u.can_edit_all %}<span class="badge badge-info">تعديل كامل</span> {% endif %}
+                    {% if u.can_edit_status and not u.can_edit_all %}<span class="badge badge-warning">تعديل حالة</span> {% endif %}
+                    {% if not u.can_create and not u.can_edit_status and not u.can_edit_all and not u.is_admin %}
+                    <span class="badge badge-muted">اطلاع فقط</span>
+                    {% endif %}
+                </td>
+                <td>
+                    {% if u.is_active %}
+                    <span class="badge badge-success">نشط</span>
+                    {% else %}
+                    <span class="badge badge-danger">معطّل</span>
+                    {% endif %}
+                </td>
+                <td>
+                    <a href="/admin/users/{{ u.id }}/edit" class="btn btn-outline btn-sm">تعديل</a>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endblock %}

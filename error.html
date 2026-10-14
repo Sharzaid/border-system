@@ -1,0 +1,9 @@
+{% extends "base.html" %}
+{% block title %}خطأ – نظام المنفذ{% endblock %}
+{% block content %}
+<div class="card" style="text-align:center; padding:2.5rem;">
+    <h1 style="color:#c53030;">⚠️ غير مصرح</h1>
+    <p style="margin:1rem 0; color:#4a5568;">{{ message }}</p>
+    <a href="/cases" class="btn btn-primary">العودة للحالات</a>
+</div>
+{% endblock %}

@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+    <title>{% block title %}نظام المنفذ{% endblock %}</title>
+    <style>
+        :root {
+            --primary: #1a365d;
+            --primary-light: #2b6cb0;
+            --success: #276749;
+            --warning: #c05621;
+            --danger: #c53030;
+            --bg: #f7fafc;
+            --card: #ffffff;
+            --text: #1a202c;
+            --muted: #718096;
+            --border: #e2e8f0;
+        }
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body {
+            font-family: 'Segoe UI', Tahoma, Arial, sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            line-height: 1.6;
+            min-height: 100vh;
+        }
+        .navbar {
+            background: var(--primary);
+            color: white;
+            padding: 0.75rem 1rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+        }
+        .navbar .brand { font-weight: 700; font-size: 1.1rem; }
+        .navbar .nav-links { display: flex; gap: 0.5rem; flex-wrap: wrap; }
+        .navbar a {
+            color: white;
+            text-decoration: none;
+            padding: 0.4rem 0.75rem;
+            border-radius: 6px;
+            font-size: 0.9rem;
+            background: rgba(255,255,255,0.1);
+        }
+        .navbar a:hover { background: rgba(255,255,255,0.2); }
+        .navbar .user-info { font-size: 0.85rem; opacity: 0.9; }
+        .container { max-width: 1100px; margin: 0 auto; padding: 1rem; }
+        .card {
+            background: var(--card);
+            border-radius: 12px;
+            padding: 1.25rem;
+            margin-bottom: 1rem;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.08);
+            border: 1px solid var(--border);
+        }
+        h1, h2 { color: var(--primary); margin-bottom: 0.75rem; }
+        h1 { font-size: 1.4rem; }
+        h2 { font-size: 1.15rem; }
+        .btn {
+            display: inline-block;
+            padding: 0.6rem 1.1rem;
+            border: none;
+            border-radius: 8px;
+            font-size: 0.95rem;
+            cursor: pointer;
+            text-decoration: none;
+            font-weight: 600;
+            text-align: center;
+        }
+        .btn-primary { background: var(--primary-light); color: white; }
+        .btn-success { background: var(--success); color: white; }
+        .btn-warning { background: var(--warning); color: white; }
+        .btn-danger { background: var(--danger); color: white; }
+        .btn-outline {
+            background: transparent;
+            border: 1.5px solid var(--primary-light);
+            color: var(--primary-light);
+        }
+        .btn-sm { padding: 0.35rem 0.7rem; font-size: 0.85rem; }
+        .btn-block { display: block; width: 100%; }
+        .form-group { margin-bottom: 1rem; }
+        label { display: block; font-weight: 600; margin-bottom: 0.3rem; font-size: 0.9rem; }
+        input[type="text"], input[type="password"], select, textarea {
+            width: 100%;
+            padding: 0.7rem 0.85rem;
+            border: 1.5px solid var(--border);
+            border-radius: 8px;
+            font-size: 1rem;
+            background: white;
+        }
+        input:focus, select:focus, textarea:focus {
+            outline: none;
+            border-color: var(--primary-light);
+            box-shadow: 0 0 0 3px rgba(43,108,176,0.15);
+        }
+        textarea { min-height: 80px; resize: vertical; }
+        .table-wrap { overflow-x: auto; -webkit-overflow-scrolling: touch; }
+        table { width: 100%; border-collapse: collapse; font-size: 0.9rem; }
+        th, td { padding: 0.65rem 0.5rem; text-align: right; border-bottom: 1px solid var(--border); }
+        th { background: #edf2f7; font-weight: 700; white-space: nowrap; }
+        tr:hover { background: #f7fafc; }
+        .badge {
+            display: inline-block;
+            padding: 0.2rem 0.55rem;
+            border-radius: 999px;
+            font-size: 0.8rem;
+            font-weight: 600;
+        }
+        .badge-success { background: #c6f6d5; color: #22543d; }
+        .badge-warning { background: #feebc8; color: #7b341e; }
+        .badge-danger { background: #fed7d7; color: #742a2a; }
+        .badge-info { background: #bee3f8; color: #2a4365; }
+        .badge-muted { background: #e2e8f0; color: #4a5568; }
+        .alert {
+            padding: 0.85rem 1rem;
+            border-radius: 8px;
+            margin-bottom: 1rem;
+            font-size: 0.95rem;
+        }
+        .alert-error { background: #fed7d7; color: #742a2a; border: 1px solid #fc8181; }
+        .alert-success { background: #c6f6d5; color: #22543d; }
+        .alert-info { background: #bee3f8; color: #2a4365; }
+        .search-bar {
+            display: flex;
+            gap: 0.5rem;
+            flex-wrap: wrap;
+            margin-bottom: 1rem;
+        }
+        .search-bar input, .search-bar select { flex: 1; min-width: 140px; }
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+            gap: 0.75rem;
+        }
+        .stat-card {
+            background: var(--card);
+            border-radius: 10px;
+            padding: 1rem;
+            text-align: center;
+            border: 1px solid var(--border);
+        }
+        .stat-card .num { font-size: 1.8rem; font-weight: 700; color: var(--primary); }
+        .stat-card .label { font-size: 0.85rem; color: var(--muted); }
+        .empty { text-align: center; padding: 2rem; color: var(--muted); }
+        .footer {
+            text-align: center;
+            padding: 1.5rem;
+            color: var(--muted);
+            font-size: 0.8rem;
+        }
+        .checkbox-group { display: flex; flex-wrap: wrap; gap: 1rem; }
+        .checkbox-group label { display: flex; align-items: center; gap: 0.4rem; font-weight: 500; }
+        @media (max-width: 600px) {
+            .navbar { flex-direction: column; align-items: flex-start; }
+            th, td { padding: 0.5rem 0.35rem; font-size: 0.82rem; }
+            .btn { padding: 0.55rem 0.9rem; }
+        }
+    </style>
+</head>
+<body>
+    {% if user %}
+    <nav class="navbar">
+        <div class="brand">🛂 نظام المنفذ</div>
+        <div class="nav-links">
+            <a href="/cases">الحالات</a>
+            {% if user.can_create or user.is_admin %}
+            <a href="/cases/new">+ تسجيل</a>
+            {% endif %}
+            <a href="/stats">إحصائيات</a>
+            {% if user.is_admin %}
+            <a href="/admin/users">المستخدمون</a>
+            {% endif %}
+            <a href="/logout">خروج</a>
+        </div>
+        <div class="user-info">{{ user.full_name }} · {{ user.department or '—' }}</div>
+    </nav>
+    {% endif %}
+
+    <div class="container">
+        {% block content %}{% endblock %}
+    </div>
+
+    <div class="footer">
+        نظام التواصل – الجوازات | الجمارك | سلاح الحدود
+    </div>
+</body>
+</html>
